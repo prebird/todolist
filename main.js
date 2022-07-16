@@ -8,16 +8,20 @@ let taskInput = document.getElementById("task-input");
 //console.log(taskInput)
 let add = document.getElementById("add");
 let tabs = document.querySelectorAll(".task-tabs div"); // 조건에 만족하는 모든걸다 가져옴
+let underLine = document.getElementById("under-line");
 let taskList = [];
 let mode = "all"; //초기값은 all로 해줘야 됨
 let filterList = [];
 add.addEventListener("click", addTask); //이벤트, 함수
 console.log(tabs);
+console.log(underLine);
 
 // 탭 이벤트 먹이기
 for(let i=1; i<tabs.length; i++){
     // 클릭 이벤트
-    tabs[i].addEventListener("click", function(event){filter(event)});
+    // 이벤트 넘겨받아서 함수 파라메터로 넘겨준다 - 무슨탭을 선택했는지 알기위해
+    tabs[i].addEventListener("click", function(event){tabClickedEvent(event)});
+    //tabs[i].addEventListener("click", (e) => horizontalIndicator(e));
 }
 
 function addTask(){
@@ -30,15 +34,22 @@ function addTask(){
     }
     taskList.push(task);
     console.log(taskList); 
+    filterList = taskList;
     render();
     taskInput.value = "";
 }
 
 function deleteTask(id){
-    console.log("삭제하자" + id);
+
     for(let i=0; i<taskList.length; i++){
         if(taskList[i].id == id){
             taskList.splice(i,1);// 시작위치, 몇개 삭제
+            break;
+        }
+    }
+    for(let i=0; i<filterList.length; i++){
+        if(filterList[i].id == id){
+            filterList.splice(i,1);// 시작위치, 몇개 삭제
             break;
         }
     }
@@ -54,14 +65,7 @@ var ID = function () {
 
 //그리기
 function render(){
-    let list = [];
-    if (mode == "all"){
-        list = taskList;
-    }
-    else if(mode == "notDone" || mode == "done"){
-        list = filterList;
-    }
-    
+    let list = filterList;
 
     let resultHtml = '';
     for(let i = 0; i<list.length;i++){
@@ -93,7 +97,7 @@ function render(){
 
 function toggleComplete(id){
     //console.log(id);
-    for(let i=0;i<taskList.length;i++){
+    for(let i=0;i<taskList.length;ifilterList){
         if(taskList[i].id == id){
             taskList[i].isComplete = !taskList[i].isComplete;
             break;
@@ -102,23 +106,39 @@ function toggleComplete(id){
     render();
 }
 
+function tabClickedEvent(event){
+    filter(event);
+    horizontalIndicator(event);
+    render();
+}
+
 function filter(event){
     // console.log("클릭된", event.target); //event.target -> 해당 태그
     mode = event.target.id;
     filterList = []
     if (mode == "all"){
+        filterList = taskList;
     }
     else if(mode == "notDone"){
         for(let i=0; i< taskList.length; i++){
-            if(taskLis[i].isComplete == false){
+            if(taskList[i].isComplete == false){
                 filterList.push(taskList[i]);
             }
         }
     }
     else if(mode == "done"){
         for(let i=0; i<taskList.length;i++){
-            filterList.push(taskList[i]);
+            if(taskList[i].isComplete == true){
+                filterList.push(taskList[i]);
+            }
         }
     }
-    render();
+}
+
+// 탭 아래 바 움직이기
+function horizontalIndicator(event){
+    underLine.style.left = event.currentTarget.offsetLeft + "px";
+    underLine.style.width = event.currentTarget.offsetWidth + "px";
+    underLine.style.top 
+    = event.currentTarget.offsetTop + event.currentTarget.offsetHeight + "px";
 }

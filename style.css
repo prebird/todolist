@@ -33,6 +33,7 @@ body{
     left: 0px;
     top: 45px;
     padding: 0px;
+    transition: 0.1s; 
 }
 
 .task{
